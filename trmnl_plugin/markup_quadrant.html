@@ -1,27 +1,31 @@
-<!-- Claude Code Dashboard — Quadrant view -->
+<!-- Claude Code Dashboard — Quadrant -->
 
 <div class="view">
   <div class="layout layout--col gap--small lg:gap--medium">
 
-    <div class="layout layout--col">
-      <span class="label label--small">Today</span>
-      <span class="value value--xsmall lg:value--small">${{ today_cost }}</span>
+    <div class="columns">
+      <div class="column">
+        <span class="label label--small label--inverted">EXTRA</span>
+        <span class="value value--xsmall lg:value--small">${{ extra_spent }}</span>
+      </div>
+      <div class="column">
+        <span class="label label--small">Session</span>
+        <span class="value value--xsmall lg:value--small">{{ session_pct }}%</span>
+      </div>
     </div>
 
-    <div class="progress-bar progress-bar--xsmall lg:progress-bar--base stretch-x">
+    <div class="progress-bar progress-bar--xsmall stretch-x">
       <div class="content">
-        <span class="label label--small">Session</span>
-        <span class="label label--small">{{ session_pct }}%</span>
+        <span class="label label--small">Week</span>
+        <span class="label label--small">{{ week_all_pct }}%</span>
       </div>
-      <div class="track">
-        <div class="fill" style="width:{{ session_pct }}%"></div>
-      </div>
+      <div class="track"><div class="fill" style="width:{{ week_all_pct }}%"></div></div>
     </div>
 
     <div class="layout layout--row gap--small">
-      <span class="label label--small">{{ today_requests }} reqs</span>
+      <span class="label label--small">{{ active_now }} run</span>
       <span class="label label--small">&middot;</span>
-      <span class="label label--small">{{ cache_hit_pct }}% cache</span>
+      <span class="label label--small">{{ streak }}d streak</span>
     </div>
 
   </div>

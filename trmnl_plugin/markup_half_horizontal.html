@@ -1,32 +1,25 @@
-<!-- Claude Code Dashboard — Half Horizontal view -->
+<!-- Claude Code Dashboard — Half Horizontal -->
 
 <div class="view">
   <div class="layout layout--col gap--medium">
 
     <div class="columns">
       <div class="column">
-        <div class="layout layout--col">
-          <span class="label label--small">Today</span>
-          <span class="value value--small lg:value--large">${{ today_cost }}</span>
-        </div>
+        <span class="label label--small label--inverted">EXTRA</span>
+        <span class="value value--small lg:value--large">${{ extra_spent }}</span>
+        <span class="description">{{ extra_pct }}%</span>
       </div>
       <div class="column">
-        <div class="layout layout--col">
-          <span class="label label--small">Month</span>
-          <span class="value value--small lg:value--large">${{ month_cost }}</span>
-        </div>
+        <span class="label label--small">Month</span>
+        <span class="value value--small lg:value--large">${{ month_cost }}</span>
       </div>
       <div class="column">
-        <div class="layout layout--col">
-          <span class="label label--small">Session</span>
-          <span class="value value--small lg:value--large">{{ session_pct }}%</span>
-        </div>
+        <span class="label label--small">Session</span>
+        <span class="value value--small lg:value--large">{{ session_pct }}%</span>
       </div>
       <div class="column">
-        <div class="layout layout--col">
-          <span class="label label--small">Week</span>
-          <span class="value value--small lg:value--large">{{ week_all_pct }}%</span>
-        </div>
+        <span class="label label--small">Week</span>
+        <span class="value value--small lg:value--large">{{ week_all_pct }}%</span>
       </div>
     </div>
 
@@ -44,6 +37,6 @@
 </div>
 
 <div class="title_bar">
-  <span class="title">Claude Code &middot; {{ plugin_count }} plugins</span>
+  <span class="title">Claude &middot; {{ streak }}d streak &middot; {{ plugin_count }} plugins</span>
   <span class="instance">{{ updated_at }}</span>
 </div>
