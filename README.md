@@ -2,6 +2,8 @@
 
 Full dashboard for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) on a [TRMNL](https://usetrmnl.com) e-ink display. Rate limits, extra usage billing, costs, sessions, cache efficiency, streak — powered by [iii-engine](https://iii.dev).
 
+![Claude Code Dashboard on TRMNL](trmnl-screenshot.png)
+
 ## What's on the Dashboard
 
 - **Extra Usage** — real Anthropic billing ($42.30 / $50 limit, 84%)
