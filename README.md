@@ -45,8 +45,8 @@ launchd (every 5 min) → run.sh → Python scripts → POST webhook
 ## Prerequisites
 
 ### For iii Worker
-- [iii CLI](https://iii.dev/docs) installed (`npm i -g iii-sdk` or `curl -fsSL https://iii.dev/install | sh`)
-- iii-engine running (`iii` or `iii --config iii-config.yaml`)
+- [iii CLI](https://iii.dev/docs) installed: `curl -fsSL https://install.iii.dev/iii/main/install.sh | sh`
+- iii-engine running (`iii --config iii-config.yaml`)
 - Node.js 20+
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) in your PATH
 - [TRMNL](https://usetrmnl.com) device with a Private Plugin
