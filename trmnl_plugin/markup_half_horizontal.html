@@ -20,18 +20,27 @@
       <span class="value value--small lg:value--xxlarge">{{ week_all_pct }}%</span>
     </div>
     <div class="flex flex--col flex--stretch-x">
-      <span class="value value--small lg:value--xxlarge">{{ active_now }}</span>
-      <span class="label label--small lg:label--large">Running</span>
+      <span class="label label--small lg:label--large">Tokens</span>
+      <span class="value value--small lg:value--xxlarge">{{ today_tokens }}</span>
     </div>
     <div class="flex flex--col flex--stretch-x">
-      <span class="value value--small lg:value--xxlarge">{{ cache_pct }}%</span>
-      <span class="label label--small lg:label--large">Cache</span>
+      <span class="label label--small lg:label--large">API eq.</span>
+      <span class="value value--small lg:value--xxlarge">~${{ today_cost }}</span>
     </div>
+  </div>
+
+  <div class="flex flex--row gap--small">
+    <span class="label label--filled">{{ primary_model }}</span>
+    <span class="label label--small">{{ active_now }} running</span>
+    <span class="label label--small">&middot;</span>
+    <span class="label label--small">{{ cache_pct }}% cache</span>
+    <span class="label label--small">&middot;</span>
+    <span class="label label--small">{{ hours_today }} coded</span>
   </div>
 
 </div>
 
 <div class="title_bar">
-  <span class="title">Claude &middot; {{ streak }}d streak &middot; {{ today_requests }} reqs &middot; {{ today_tokens }} tok</span>
+  <span class="title">Claude &middot; {{ streak }}d streak &middot; {{ today_msgs }} msgs &middot; ${{ week_cost }}/wk</span>
   <span class="instance">{{ updated_at }}</span>
 </div>

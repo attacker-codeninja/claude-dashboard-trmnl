@@ -84,8 +84,9 @@ def gather_stats() -> dict:
     # Accumulators
     today_cost = 0.0; yesterday_cost = 0.0; week_cost = 0.0; month_cost = 0.0; all_time_cost = 0.0
     today_in = 0; today_out = 0; today_cr = 0; today_cw = 0; today_reqs = 0
+    week_tokens = 0; week_reqs = 0; week_sessions = 0
     all_sessions = 0; month_sessions = 0; active_now = 0; sessions_today = 0
-    model_costs = {}; model_reqs = {}; daily_costs = {}; daily_reqs = {}
+    model_costs = {}; model_reqs = {}; model_tokens = {}; daily_costs = {}; daily_reqs = {}
     project_costs = {}; project_sessions = {}
     days_with_activity = set()
     today_first_ts = None; today_last_ts = None
@@ -135,10 +136,14 @@ def gather_stats() -> dict:
                     longest_session_msgs = sd["msgs"]
                     longest_session_proj = proj
 
+            week_tokens += sd["w_tokens"]; week_reqs += sd["w_reqs"]
+            if sd["w_reqs"] > 0: week_sessions += 1
             for t, c in sd["m_costs"].items():
                 model_costs[t] = model_costs.get(t, 0) + c
             for t, r in sd["m_reqs"].items():
                 model_reqs[t] = model_reqs.get(t, 0) + r
+            for t, tk in sd["m_tokens"].items():
+                model_tokens[t] = model_tokens.get(t, 0) + tk
             for d, c in sd["d_costs"].items():
                 daily_costs[d] = daily_costs.get(d, 0) + c
                 daily_reqs[d] = daily_reqs.get(d, 0) + 1
@@ -152,10 +157,14 @@ def gather_stats() -> dict:
     total_m_reqs = sum(model_reqs.values()) or 1
     primary = max(model_reqs, key=model_reqs.get) if model_reqs else "—"
     primary_pct = round(model_reqs.get(primary, 0) / total_m_reqs * 100) if model_reqs else 0
-    display_reqs = {}
+    display_reqs = {}; display_tokens = {}
     for t, r in model_reqs.items():
         base = t.split("_")[0]
         display_reqs[base] = display_reqs.get(base, 0) + r
+    for t, tk in model_tokens.items():
+        base = t.split("_")[0]
+        display_tokens[base] = display_tokens.get(base, 0) + tk
+    total_m_tokens = sum(display_tokens.values()) or 1
     model_line = " / ".join(
         f"{t}:{display_reqs[t]}" for t in ["opus","sonnet","haiku"]
         if t in display_reqs and display_reqs[t]/total_m_reqs >= 0.01
@@ -224,10 +233,14 @@ def gather_stats() -> dict:
         "cost_trend": cost_trend, "cost_per_req": f"{cost_per_req:.2f}" if cost_per_req < 10 else _fc(cost_per_req),
         "avg_session_cost": _fc(avg_session_cost),
         "cache_savings": _fc(cache_savings),
-        # Tokens
-        "today_tokens": _ft(today_tokens), "today_input": _ft(today_in + today_cr + today_cw),
-        "today_output": _ft(today_out), "cache_pct": str(cache_pct),
-        "today_requests": str(today_reqs),
+        # Tokens (breakdown)
+        "today_tokens": _ft(today_tokens), "today_input": _ft(today_in),
+        "today_output": _ft(today_out), "today_cache_read": _ft(today_cr),
+        "today_cache_write": _ft(today_cw), "cache_pct": str(cache_pct),
+        "today_requests": str(today_reqs), "today_msgs": str(today_reqs),
+        # Week
+        "week_tokens": _ft(week_tokens), "week_msgs": str(week_reqs),
+        "week_sessions": str(week_sessions),
         # Sessions
         "active_now": str(active_now), "sessions_today": str(sessions_today),
         "month_sessions": str(month_sessions), "all_sessions": str(all_sessions),
@@ -237,6 +250,12 @@ def gather_stats() -> dict:
         # Model
         "primary_model": primary.split("_")[0], "primary_pct": str(primary_pct),
         "model_line": model_line,
+        "opus_tokens": _ft(display_tokens.get("opus", 0)),
+        "opus_pct": str(round(display_tokens.get("opus", 0) / total_m_tokens * 100)),
+        "sonnet_tokens": _ft(display_tokens.get("sonnet", 0)),
+        "sonnet_pct": str(round(display_tokens.get("sonnet", 0) / total_m_tokens * 100)),
+        "haiku_tokens": _ft(display_tokens.get("haiku", 0)),
+        "haiku_pct": str(round(display_tokens.get("haiku", 0) / total_m_tokens * 100)),
         # Projects
         "top_project": top_project, "top_proj_cost": top_proj_cost,
         # Setup
@@ -256,8 +275,9 @@ def gather_stats() -> dict:
 def _parse(path, today, yesterday, week_ago):
     r = {"cost":0,"today_cost":0,"yesterday_cost":0,"week_cost":0,
          "t_in":0,"t_out":0,"t_cr":0,"t_cw":0,"t_reqs":0,
+         "w_tokens":0,"w_reqs":0,
          "t_first":None,"t_last":None,"msgs":0,
-         "m_costs":{},"m_reqs":{},"d_costs":{}}
+         "m_costs":{},"m_reqs":{},"m_tokens":{},"d_costs":{}}
     try:
         with open(path, "r", errors="replace") as f:
             for line in f:
@@ -275,9 +295,11 @@ def _parse(path, today, yesterday, week_ago):
                 ws=(u.get("server_tool_use") or {}).get("web_search_requests",0)
                 model=m.get("model","claude-sonnet-4-6"); t=_tier(model, speed)
                 c=_cost(model,inp,out,cr,cw,speed,ws)
+                total_tok = inp + out + cr + cw
                 r["cost"]+=c; r["msgs"]+=1
                 r["m_costs"][t]=r["m_costs"].get(t,0)+c
                 r["m_reqs"][t]=r["m_reqs"].get(t,0)+1
+                r["m_tokens"][t]=r["m_tokens"].get(t,0)+total_tok
                 if day: r["d_costs"][day]=r["d_costs"].get(day,0)+c
                 if day==today:
                     r["today_cost"]+=c; r["t_in"]+=inp; r["t_out"]+=out
@@ -289,7 +311,8 @@ def _parse(path, today, yesterday, week_ago):
                 if ts:
                     try:
                         dt=datetime.fromisoformat(ts.replace("Z","+00:00"))
-                        if dt.replace(tzinfo=None)>=week_ago: r["week_cost"]+=c
+                        if dt.replace(tzinfo=None)>=week_ago:
+                            r["week_cost"]+=c; r["w_tokens"]+=total_tok; r["w_reqs"]+=1
                     except: pass
     except: pass
     return r
@@ -308,6 +331,9 @@ def _default():
     d.update({k:"0.00" for k in ["today_cost","yesterday_cost","week_cost","month_cost",
               "all_time_cost","projected_cost","daily_avg","cost_per_req",
               "avg_session_cost","cache_savings"]})
+    d.update({k:"0" for k in ["today_cache_read","today_cache_write","today_msgs",
+              "week_tokens","week_msgs","week_sessions",
+              "opus_tokens","opus_pct","sonnet_tokens","sonnet_pct","haiku_tokens","haiku_pct"]})
     d.update({"cost_trend":"—","today_tokens":"0","today_input":"0","today_output":"0",
               "hours_today":"—","primary_model":"—","model_line":"—",
               "top_project":"—","top_proj_cost":"0","mcp_names":"none"})

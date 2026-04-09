@@ -100,9 +100,11 @@ function gatherStats(): Record<string, string> {
 
   let todayCost = 0, yesterdayCost = 0, weekCost = 0, monthCost = 0, allTimeCost = 0;
   let todayIn = 0, todayOut = 0, todayCr = 0, todayCw = 0, todayReqs = 0;
+  let weekTokens = 0, weekReqs = 0, weekSessions = 0;
   let allSessions = 0, monthSessions = 0, activeNow = 0, sessionsToday = 0;
   const modelCosts: Record<string, number> = {};
   const modelReqs: Record<string, number> = {};
+  const modelTokens: Record<string, number> = {};
   const dailyCosts: Record<string, number> = {};
   const daysActive = new Set<string>();
   let todayFirstTs: string | null = null, todayLastTs: string | null = null;
@@ -153,6 +155,7 @@ function gatherStats(): Record<string, string> {
         const ts = e.timestamp ?? "";
         const day = ts.slice(0, 10);
 
+        const totalTok = inp + out + cr + cw;
         allTimeCost += c;
         if (!isMonth) continue;
 
@@ -161,6 +164,7 @@ function gatherStats(): Record<string, string> {
         monthCost += c;
         modelCosts[t] = (modelCosts[t] ?? 0) + c;
         modelReqs[t] = (modelReqs[t] ?? 0) + 1;
+        modelTokens[t] = (modelTokens[t] ?? 0) + totalTok;
         if (day) { dailyCosts[day] = (dailyCosts[day] ?? 0) + c; daysActive.add(day); }
 
         if (day === today) {
@@ -170,7 +174,7 @@ function gatherStats(): Record<string, string> {
         }
         if (day === yesterday) yesterdayCost += c;
         if (ts) {
-          try { if (new Date(ts) >= weekAgo) weekCost += c; } catch {}
+          try { if (new Date(ts) >= weekAgo) { weekCost += c; weekTokens += totalTok; weekReqs++; } } catch {}
         }
       }
       if (sessMsgs > longestMsgs) longestMsgs = sessMsgs;
@@ -181,10 +185,16 @@ function gatherStats(): Record<string, string> {
   const totalMReqs = Object.values(modelReqs).reduce((a, b) => a + b, 0) || 1;
   const primary = Object.entries(modelReqs).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
   const displayReqs: Record<string, number> = {};
+  const displayTokens: Record<string, number> = {};
   for (const [t, r] of Object.entries(modelReqs)) {
     const base = t.split("_")[0];
     displayReqs[base] = (displayReqs[base] ?? 0) + r;
   }
+  for (const [t, tk] of Object.entries(modelTokens)) {
+    const base = t.split("_")[0];
+    displayTokens[base] = (displayTokens[base] ?? 0) + tk;
+  }
+  const totalMTokens = Object.values(displayTokens).reduce((a, b) => a + b, 0) || 1;
   const modelLine = ["opus", "sonnet", "haiku"]
     .filter(t => displayReqs[t] && displayReqs[t] / totalMReqs >= 0.01)
     .map(t => `${t}:${displayReqs[t]}`).join(" / ") || `${primary.split("_")[0]}:${modelReqs[primary] ?? 0}`;
@@ -228,8 +238,10 @@ function gatherStats(): Record<string, string> {
     cost_per_req: costPerReq < 10 ? costPerReq.toFixed(2) : fc(costPerReq),
     avg_session_cost: fc(avgSessionCost), cache_savings: fc(cacheSavings),
     today_tokens: ft(todayIn + todayOut + todayCr + todayCw),
-    today_input: ft(totalInput), today_output: ft(todayOut),
-    cache_pct: String(cachePct), today_requests: String(todayReqs),
+    today_input: ft(todayIn), today_output: ft(todayOut),
+    today_cache_read: ft(todayCr), today_cache_write: ft(todayCw),
+    cache_pct: String(cachePct), today_requests: String(todayReqs), today_msgs: String(todayReqs),
+    week_tokens: ft(weekTokens), week_msgs: String(weekReqs), week_sessions: String(weekSessions),
     active_now: String(activeNow), sessions_today: String(sessionsToday),
     month_sessions: String(monthSessions), all_sessions: String(allSessions),
     active_days: String([...daysActive].filter(d => d >= monthStart.toISOString().slice(0, 10)).length),
@@ -237,6 +249,9 @@ function gatherStats(): Record<string, string> {
     longest_session: String(longestMsgs),
     primary_model: primary.split("_")[0], primary_pct: String(Math.round((modelReqs[primary] ?? 0) / totalMReqs * 100)),
     model_line: modelLine,
+    opus_tokens: ft(displayTokens.opus ?? 0), opus_pct: String(Math.round((displayTokens.opus ?? 0) / totalMTokens * 100)),
+    sonnet_tokens: ft(displayTokens.sonnet ?? 0), sonnet_pct: String(Math.round((displayTokens.sonnet ?? 0) / totalMTokens * 100)),
+    haiku_tokens: ft(displayTokens.haiku ?? 0), haiku_pct: String(Math.round((displayTokens.haiku ?? 0) / totalMTokens * 100)),
     plugin_count: String(countPlugins()), mcp_count: String(mcpCount), mcp_names: mcpNames,
   };
 }
@@ -245,10 +260,14 @@ function defaultStats(): Record<string, string> {
   return { today_cost: "0", week_cost: "0", month_cost: "0", all_time_cost: "0",
     projected_cost: "0", daily_avg: "0", cost_trend: "—", cost_per_req: "0",
     avg_session_cost: "0", cache_savings: "0", today_tokens: "0", today_input: "0",
-    today_output: "0", cache_pct: "0", today_requests: "0", active_now: "0",
-    sessions_today: "0", month_sessions: "0", all_sessions: "0", active_days: "0",
-    streak: "0", hours_today: "—", longest_session: "0", yesterday_cost: "0",
+    today_output: "0", today_cache_read: "0", today_cache_write: "0",
+    cache_pct: "0", today_requests: "0", today_msgs: "0",
+    week_tokens: "0", week_msgs: "0", week_sessions: "0",
+    active_now: "0", sessions_today: "0", month_sessions: "0", all_sessions: "0",
+    active_days: "0", streak: "0", hours_today: "—", longest_session: "0", yesterday_cost: "0",
     primary_model: "—", primary_pct: "0", model_line: "—",
+    opus_tokens: "0", opus_pct: "0", sonnet_tokens: "0", sonnet_pct: "0",
+    haiku_tokens: "0", haiku_pct: "0",
     plugin_count: "0", mcp_count: "0", mcp_names: "none" };
 }
 

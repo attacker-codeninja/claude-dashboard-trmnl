@@ -18,6 +18,7 @@
   </div>
 
   <div class="flex flex--row gap--small">
+    <span class="label label--filled">{{ primary_model }}</span>
     <span class="label label--small">{{ active_now }} run</span>
     <span class="label label--small">&middot;</span>
     <span class="label label--small">{{ streak }}d streak</span>
@@ -28,6 +29,6 @@
 </div>
 
 <div class="title_bar">
-  <span class="title">Claude</span>
+  <span class="title">Claude &middot; ~${{ today_cost }}</span>
   <span class="instance">{{ updated_at }}</span>
 </div>

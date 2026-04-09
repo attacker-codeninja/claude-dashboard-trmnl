@@ -37,12 +37,12 @@
 
   <div class="grid grid--cols-3">
     <div class="flex flex--col flex--stretch-x">
-      <span class="value value--xxsmall lg:value--large">{{ active_now }}</span>
-      <span class="label label--small lg:label--large">Run</span>
+      <span class="value value--xxsmall lg:value--large">{{ today_tokens }}</span>
+      <span class="label label--small lg:label--large">Tokens</span>
     </div>
     <div class="flex flex--col flex--stretch-x">
-      <span class="value value--xxsmall lg:value--large">{{ all_sessions }}</span>
-      <span class="label label--small lg:label--large">Total</span>
+      <span class="value value--xxsmall lg:value--large">~${{ today_cost }}</span>
+      <span class="label label--small lg:label--large">API eq.</span>
     </div>
     <div class="flex flex--col flex--stretch-x">
       <span class="value value--xxsmall lg:value--large">{{ cache_pct }}%</span>
@@ -50,9 +50,29 @@
     </div>
   </div>
 
+  <div class="grid grid--cols-3">
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ active_now }}</span>
+      <span class="label label--small lg:label--large">Running</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ sessions_today }}</span>
+      <span class="label label--small lg:label--large">Today</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ all_sessions }}</span>
+      <span class="label label--small lg:label--large">Total</span>
+    </div>
+  </div>
+
+  <div class="flex flex--row gap--small">
+    <span class="label label--filled">{{ primary_model }}</span>
+    <span class="label label--small">{{ hours_today }} coded</span>
+  </div>
+
 </div>
 
 <div class="title_bar">
-  <span class="title">Claude &middot; {{ streak }}d streak</span>
+  <span class="title">Claude &middot; {{ streak }}d streak &middot; ${{ week_cost }}/wk</span>
   <span class="instance">{{ updated_at }}</span>
 </div>
