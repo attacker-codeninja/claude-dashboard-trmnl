@@ -1,36 +1,34 @@
 <!-- Claude Code Dashboard — Half Horizontal (800x240) -->
 
-<div class="view">
-  <div class="layout layout--col">
+<div class="layout layout--col">
 
-    <div class="columns">
-      <div class="column">
-        <span class="label label--filled">EXTRA</span>
-        <span class="value value--small">${{ extra_spent }}</span>
-      </div>
-      <div class="column">
-        <span class="label label--small">Month</span>
-        <span class="value value--small">${{ month_cost }}</span>
-      </div>
-      <div class="column">
-        <span class="label label--small">Session</span>
-        <span class="value value--small">{{ session_pct }}%</span>
-      </div>
-      <div class="column">
-        <span class="label label--small">Week</span>
-        <span class="value value--small">{{ week_all_pct }}%</span>
-      </div>
-      <div class="column">
-        <span class="value value--small">{{ active_now }}</span>
-        <span class="label label--small">Running</span>
-      </div>
-      <div class="column">
-        <span class="value value--small">{{ cache_pct }}%</span>
-        <span class="label label--small">Cache</span>
-      </div>
+  <div class="grid grid--cols-6 lg:grid--cols-3">
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--filled lg:label--large">EXTRA</span>
+      <span class="value value--small lg:value--xxlarge">${{ extra_spent }}</span>
     </div>
-
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--small lg:label--large">Month</span>
+      <span class="value value--small lg:value--xxlarge">${{ month_cost }}</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--small lg:label--large">Session</span>
+      <span class="value value--small lg:value--xxlarge">{{ session_pct }}%</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--small lg:label--large">Week</span>
+      <span class="value value--small lg:value--xxlarge">{{ week_all_pct }}%</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--small lg:value--xxlarge">{{ active_now }}</span>
+      <span class="label label--small lg:label--large">Running</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--small lg:value--xxlarge">{{ cache_pct }}%</span>
+      <span class="label label--small lg:label--large">Cache</span>
+    </div>
   </div>
+
 </div>
 
 <div class="title_bar">

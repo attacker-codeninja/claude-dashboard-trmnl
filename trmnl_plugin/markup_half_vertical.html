@@ -1,57 +1,55 @@
 <!-- Claude Code Dashboard — Half Vertical (400x480) -->
 
-<div class="view">
-  <div class="layout layout--col">
+<div class="layout layout--col">
 
-    <div class="layout layout--col">
-      <span class="label label--filled">EXTRA</span>
-      <span class="value value--small">${{ extra_spent }}</span>
-      <span class="description">{{ extra_pct }}% of ${{ extra_limit }}</span>
-    </div>
-
-    <div class="columns">
-      <div class="column">
-        <span class="label label--small">Month</span>
-        <span class="value value--xxsmall">${{ month_cost }}</span>
-      </div>
-      <div class="column">
-        <span class="label label--small">All Time</span>
-        <span class="value value--xxsmall">${{ all_time_cost }}</span>
-      </div>
-    </div>
-
-    <div class="progress-bar stretch-x">
-      <div class="content">
-        <span class="label label--small">Session</span>
-        <span class="label label--small">{{ session_pct }}%</span>
-      </div>
-      <div class="track"><div class="fill" style="width:{{ session_pct }}%"></div></div>
-    </div>
-
-    <div class="progress-bar stretch-x">
-      <div class="content">
-        <span class="label label--small">Week</span>
-        <span class="label label--small">{{ week_all_pct }}%</span>
-      </div>
-      <div class="track"><div class="fill" style="width:{{ week_all_pct }}%"></div></div>
-    </div>
-
-    <div class="columns">
-      <div class="column">
-        <span class="value value--xxsmall">{{ active_now }}</span>
-        <span class="label label--small">Run</span>
-      </div>
-      <div class="column">
-        <span class="value value--xxsmall">{{ all_sessions }}</span>
-        <span class="label label--small">Total</span>
-      </div>
-      <div class="column">
-        <span class="value value--xxsmall">{{ cache_pct }}%</span>
-        <span class="label label--small">Cache</span>
-      </div>
-    </div>
-
+  <div class="flex flex--col flex--stretch-x">
+    <span class="label label--filled lg:label--large">EXTRA</span>
+    <span class="value value--small lg:value--xxlarge">${{ extra_spent }}</span>
+    <span class="description lg:description--xlarge">{{ extra_pct }}% of ${{ extra_limit }}</span>
   </div>
+
+  <div class="grid grid--cols-2">
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--small lg:label--large">Month</span>
+      <span class="value value--xxsmall lg:value--large">${{ month_cost }}</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="label label--small lg:label--large">All Time</span>
+      <span class="value value--xxsmall lg:value--large">${{ all_time_cost }}</span>
+    </div>
+  </div>
+
+  <div class="progress-bar stretch-x">
+    <div class="content">
+      <span class="label label--small">Session</span>
+      <span class="label label--small">{{ session_pct }}%</span>
+    </div>
+    <div class="track"><div class="fill" style="width:{{ session_pct }}%"></div></div>
+  </div>
+
+  <div class="progress-bar stretch-x">
+    <div class="content">
+      <span class="label label--small">Week</span>
+      <span class="label label--small">{{ week_all_pct }}%</span>
+    </div>
+    <div class="track"><div class="fill" style="width:{{ week_all_pct }}%"></div></div>
+  </div>
+
+  <div class="grid grid--cols-3">
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ active_now }}</span>
+      <span class="label label--small lg:label--large">Run</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ all_sessions }}</span>
+      <span class="label label--small lg:label--large">Total</span>
+    </div>
+    <div class="flex flex--col flex--stretch-x">
+      <span class="value value--xxsmall lg:value--large">{{ cache_pct }}%</span>
+      <span class="label label--small lg:label--large">Cache</span>
+    </div>
+  </div>
+
 </div>
 
 <div class="title_bar">
