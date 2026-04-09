@@ -8,7 +8,7 @@ Full dashboard for [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 
 - **Extra Usage** — real Anthropic billing ($42.30 / $50 limit, 84%)
 - **Rate Limits** — session % and week % with reset times
-- **Cost Tracking** — today, week, month, all-time (estimated from token pricing)
+- **Cost Tracking** — today, week, month, all-time (per-model pricing from Claude Code source)
 - **Sessions** — running, today, month, total, streak days, hours coded
 - **Efficiency** — tokens, requests, cache hit %, cost/req, cache savings
 - **Setup** — plugins, MCPs, model breakdown
@@ -103,13 +103,28 @@ claude                # trust the folder, then /exit
 4. Set refresh interval to **15 minutes**
 5. Add Form Fields YAML from `trmnl_plugin/plugin.yml`
 
+## Pricing Tiers
+
+Cost calculation matches Claude Code's internal pricing (`src/utils/modelCost.ts`):
+
+| Tier | Models | Input/Mtok | Output/Mtok | Cache Read | Cache Write |
+|---|---|---|---|---|---|
+| opus_new | Opus 4.5, 4.6 | $5 | $25 | $0.50 | $6.25 |
+| opus_fast | Opus 4.6 (fast mode) | $30 | $150 | $3.00 | $37.50 |
+| opus_old | Opus 4.0, 4.1 | $15 | $75 | $1.50 | $18.75 |
+| sonnet | All Sonnet | $3 | $15 | $0.30 | $3.75 |
+| haiku_45 | Haiku 4.5 | $1 | $5 | $0.10 | $1.25 |
+| haiku_35 | Haiku 3.5 | $0.80 | $4 | $0.08 | $1.00 |
+
+Web search: $0.01 per request. Fast mode detected via `usage.speed === "fast"` in session data.
+
 ## Data Flow
 
 ```
 Claude Code session files (~/.claude/projects/**/*.jsonl)
-  ├─ Each assistant message has: model, input_tokens, output_tokens, cache tokens
-  ├─ Parsed to calculate: costs (using Anthropic pricing), sessions, streaks
-  └─ 78+ sessions, $12k+ all-time tracked
+  ├─ Each assistant message has: model, input_tokens, output_tokens, cache tokens, speed, web_search_requests
+  ├─ Parsed to calculate: costs (per-model tiered pricing), sessions, streaks
+  └─ Tracks fast mode and web search costs
 
 Claude Code /usage (scraped via pexpect + pyte)
   ├─ Session %, Week All %, Sonnet %
@@ -129,12 +144,18 @@ All merged → POST to TRMNL webhook → rendered on e-ink
 | `extra_limit` | `50.00` | Claude /usage |
 | `extra_pct` | `84` | Claude /usage |
 | `session_pct` | `3` | Claude /usage |
+| `session_reset_short` | `5pm` | Claude /usage |
 | `week_all_pct` | `18` | Claude /usage |
+| `week_all_reset_short` | `Mon 5pm` | Claude /usage |
 | `today_cost` | `27.06` | Session files |
+| `yesterday_cost` | `18.50` | Session files |
 | `week_cost` | `5.0k` | Session files |
 | `month_cost` | `5.5k` | Session files |
 | `all_time_cost` | `12k` | Session files |
 | `projected_cost` | `28k` | Session files |
+| `daily_avg` | `180` | Session files |
+| `cost_trend` | `+46%` | Session files |
+| `avg_session_cost` | `250` | Session files |
 | `today_tokens` | `7.3M` | Session files |
 | `today_requests` | `24` | Session files |
 | `cache_pct` | `88` | Session files |
@@ -148,8 +169,11 @@ All merged → POST to TRMNL webhook → rendered on e-ink
 | `hours_today` | `12m` | Session files |
 | `primary_model` | `opus` | Session files |
 | `model_line` | `opus:10375` | Session files |
+| `top_project` | `kubectl-mcp` | Session files |
+| `top_proj_cost` | `1.2k` | Session files |
 | `plugin_count` | `15` | Plugins file |
 | `mcp_count` | `2` | Settings files |
+| `updated_at` | `Apr 9 at 3:45 PM` | Generated |
 
 ## Project Structure
 

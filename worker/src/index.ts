@@ -195,7 +195,8 @@ function gatherStats(): Record<string, string> {
   const noCacheCost = totalInput > 0 ? cost("claude-opus-4-6", totalInput, todayOut, 0, 0) : 0;
   const cacheSavings = Math.max(0, noCacheCost - todayCost);
   const costPerReq = todayReqs > 0 ? todayCost / todayReqs : 0;
-  const costTrend = yesterdayCost > 0 ? `${((todayCost - yesterdayCost) / yesterdayCost * 100).toFixed(0)}%` : "—";
+  const ch = yesterdayCost > 0 ? (todayCost - yesterdayCost) / yesterdayCost * 100 : 0;
+  const costTrend = yesterdayCost > 0 ? `${ch > 0 ? "+" : ""}${ch.toFixed(0)}%` : "—";
   const daysInMonth = now.getDate();
   const dailyAvg = daysInMonth > 0 ? monthCost / daysInMonth : 0;
   const projected = monthCost + dailyAvg * Math.max(0, 30 - daysInMonth);
